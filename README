@@ -1,0 +1,65 @@
+Installer for jitsi-meet, jigasi and jibri on same server.
+
+***Always Installs below mentioned software:
+    nginx, prosody, jitsi-meet-prosody, jitsi-meet, jitsi-meet-web, jitsi-meet-web-config, 
+    jitsi-meet-turnserver, jicofo, jitsi-videobridge2
+
+***Below are optional, installed only if opted for:
+    jigasi, jibri
+
+*** Supported Platforms: Ubuntu-16/18/20, Debian-9/10
+
+*** Usage:
+
+./jitsi_setup.sh (*** Run without any arguments ***)
+
+*** Options: 
+    [check_prerequisites|show_installed_versions|install|uninstall|help|
+        export_config_file_template|show_status_of_services|Quit]
+
+1. check_prerequisites: Check if all prerequisites are met, like mandatory configuration options
+2. show_installed_versions: Display versions of all jitsi software(s)
+3. install: Will install all jitsi components listed below
+            nginx, jitsi-meet, prosody, jicofo, jitsi-videobridge, jigasi, jibri
+4. uninstall: Will stop services & uninstall all jitsi components listed below
+            nginx, jitsi-meet, prosody, jicofo, jitsi-videobridge, jigasi, jibri
+
+5. help: Display help/usage
+6. export_config_file_template: Dump configuration file template to current directory
+7. show_status_of_services: Displays status(running or not) of all jitsi software(s)
+8. Quit: Quit setup
+
+*** NOTE ***: uninstall will also remove all the directories listed below: 
+    /etc/jitsi
+    /etc/nginx
+    /etc/prosody
+    /etc/init.d/prosody
+    /etc/init.d/nginx
+    /usr/share/jitsi*
+    /usr/share/nginx
+    /usr/share/jicofo
+    /usr/share/jigasi
+    /var/lib/jigasi
+    /var/lib/prosody
+    /var/lib/nginx
+
+*** Mandatory configuration options:
+
+    export BEHIND_NAT=yes/no (Set it to "no" if the server has a public IP on one of it's interfaces, else to "yes")
+    export SERVER_FQDN="server's FQDN" (This will be used to access the web conferences)
+
+    export PUBLIC_IP="public ip of server" (mandatory only if BEHIND_NAT is "yes")
+    export PRIVATE_IP="private ip of server" (mandatory only if BEHIND_NAT is "yes")
+
+**** Other optional variables:
+    export SIP_USER_ID=1003@172.31.14.134
+    export SIP_PASSWORD=1234
+    export JIGASI_TRANSCRIPTS_DIR=/directory/to/store/transcripts (Default: "/etc/jitsi/transcripts") 
+    export JIBRI_RECORDINGS_DIR=/directory/to/store/transcripts (Deafault:  "/etc/jitsi/recordings")
+    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/google/credentials/file
+
+*** For more options, dump the config file template using "export_config_file_template" option and check...
+
+*** If config file(jitsi_config_file) is present in the directory same as the installer, options specified in config file will take precedence
+
+*** You may either "export" variables from terminal or uncomment those lines in the config file.
