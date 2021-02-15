@@ -1,0 +1,51 @@
+# Configuration for jitsi installer
+# Version: 1.0
+
+# Mandatory parameters
+# BEHIND_NAT=yes/no
+# SERVER_FQDN="FQDN of the server"
+
+# Private and Public IPs are mandatory, only if BEHIND_NAT=yes
+# PUBLIC_IP="server's public ip"
+# PRIVATE_IP="server's private ip"
+
+# Mandatory parameters end
+
+# HOST_NAME="hostname of the server" #result of command 'hostname'
+
+# Certificates
+# USE_SELF_SIGNED_CERTS=yes/no
+# USE_LETSENCRYPT_CERTS=yes/no
+# USE_EXISTING_CERTS=yes/no
+# 
+# LETSENCRYPT_EMAIL=DummyName@DummyCompany
+# 
+# For Jitsi Meet Server
+# ENABLE_SECURE_DOMAIN=yes/no
+# 
+# Ensure both users and passwords are of same length
+# SECURE_USERS="user1 user2 user3 ..."
+# SECURE_PASSWORDS="password1 password2 password3 ..."
+
+# For Jigasi
+# INSTALL_JIGASI=yes/no
+# ENABLE_JIGASI_AUTHENTICATION=yes/no
+# 
+# Should be of format USER@HOST
+# SIP_USER_ID=SIPUSER@SIPHOST
+# SIP_PASSWORD=PASSWORD_FOR_SIPUSER
+# 
+# For Transcription
+# ENABLE_TRANSCRIPTION=yes/no
+# TRANSCRIPTION_ENGINE=goole/vosk #case sensitive
+# JIGASI_TRANSCRIPTS_DIR=/directory/to/store/transcripts
+# 
+# GOOGLE_APPLICATION_CREDENTIALS=/path/to/google/credentials/file
+# 
+# For Jibri
+# INSTALL_JIBRI=yes/no
+# JIBRI_RECORDINGS_DIR=/directory/to/store/recordings
+# 
+# Miscellaneous
+# TODO: Remove me after handling in code
+# UNINSTALL_FROM_CONFIG=yes/no

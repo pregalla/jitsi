@@ -52,8 +52,9 @@ Installer for jitsi-meet, jigasi and jibri on same server.
     export PRIVATE_IP="private ip of server" (mandatory only if BEHIND_NAT is "yes")
 
 **** Other optional variables:
-    export SIP_USER_ID=1003@172.31.14.134
-    export SIP_PASSWORD=1234
+    export HOST_NAME=HOSTNAME_OF_SERVER (Default: Result of command 'hostname')
+    export SIP_USER_ID=SIPUSER@SIPHOST
+    export SIP_PASSWORD=PASSWORD_FOR_SIPUSER
     export JIGASI_TRANSCRIPTS_DIR=/directory/to/store/transcripts (Default: "/etc/jitsi/transcripts") 
     export JIBRI_RECORDINGS_DIR=/directory/to/store/transcripts (Deafault:  "/etc/jitsi/recordings")
     export GOOGLE_APPLICATION_CREDENTIALS="/path/to/google/credentials/file

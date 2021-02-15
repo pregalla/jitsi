@@ -1491,7 +1491,7 @@ install_jitsi()
     show_service_status
 }
 
-# TODO: Handle UNINSTALL_IN_CONFIG in config file
+# TODO: Handle UNINSTALL_FROM_CONFIG in config file
 uninstall_jitsi()
 {
     logit
@@ -1854,6 +1854,8 @@ export_config_file_template()
 
 # Mandatory parameters end
 
+# HOST_NAME=\"hostname of the server\" #result of command 'hostname'
+
 # Certificates
 # USE_SELF_SIGNED_CERTS=yes/no
 # USE_LETSENCRYPT_CERTS=yes/no
@@ -1889,7 +1891,7 @@ export_config_file_template()
 # 
 # Miscellaneous
 # TODO: Remove me after handling in code
-# UNINSTALL_IN_CONFIG=yes/no
+# UNINSTALL_FROM_CONFIG=yes/no
 EOF
 "
         logit "Exporting config file template to $CONFIG_FILE: COMPLETE..."
