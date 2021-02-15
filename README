@@ -1,15 +1,15 @@
 Installer for jitsi-meet, jigasi and jibri on same server.
 
-***Always Installs below mentioned software:
+*** Always Installs below mentioned software:
     nginx, prosody, jitsi-meet-prosody, jitsi-meet, jitsi-meet-web, jitsi-meet-web-config, 
     jitsi-meet-turnserver, jicofo, jitsi-videobridge2
 
-***Below are optional, installed only if opted for:
+*** Below are optional, installed only if opted for:
     jigasi, jibri
 
 *** Supported Platforms: Ubuntu-16/18/20, Debian-9/10
 
-*** Usage:
+*** USAGE:
 
 ./jitsi_setup.sh (*** Run without any arguments ***)
 
