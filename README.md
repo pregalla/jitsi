@@ -1,6 +1,6 @@
 # Installer for jitsi-meet, jigasi and jibri 
 
-The script (_jitsi_setup.sh_) can be used to install **stable version of all 3** on a stand-alone server.
+The script (_jitsi_setup.sh_) can be used to install **stable version of all 3** on a **stand-alone server**.
 
 This is simply a script version of quick-install document at https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-quickstart
 
@@ -64,5 +64,5 @@ bash jitsi_setup.sh (**Run without any arguments**)
 
 You may either _**export**_ variables from terminal or _**uncomment**_ those lines in the config file...
 
-If the config file(**jitsi_config_file**) is present in the directory same as the installer, **options specified in config file will take precedence**
+If the config file(**jitsi_config_file**) is present in the same directory as the installer, **options specified in config file will take precedence**
 
