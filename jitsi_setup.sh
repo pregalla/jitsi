@@ -42,7 +42,12 @@ TO_REMOVE_DIRS="
 
 logit()
 {
-    echo "$1"|tee -a "$LOGFILE"
+    if [ "$2" = "nostdout" ]
+    then
+        echo "$1" >> "$LOGFILE"
+    else
+        echo "$1"|tee -a "$LOGFILE"
+    fi
 }
 
 show_start_time()
@@ -1932,6 +1937,18 @@ read_config_file()
         if bash -n $CONFIG_FILE > /dev/null 2>&1
         then
             source "$CONFIG_FILE"
+            while read line
+            do
+                #[[ "$line" =~ ^#.*$ ]] && continue
+                #[[ "$line" =~ ^$ ]] && continue
+
+                line=$(echo $line|sed 's/#.*//')
+                [[ "$line" =~ ^$ ]] && continue
+
+                logit "${FUNCNAME[0]}: $line" "nostdout"
+            done <  $CONFIG_FILE
+
+            logit
             logit "*** Reading configuration from $CONFIG_FILE: COMPLETE... ***"
         else
             logit "*** ERROR ***: Config file $CONFIG_FILE is not in proper format..."
