@@ -1930,13 +1930,13 @@ read_config_file()
     then
         logit
         logit "*** Config file found: $CONFIG_FILE"
-        logit "*** Reading config file now..."
-        logit
 
         #check if it is alright
         if bash -n $CONFIG_FILE > /dev/null 2>&1
         then
             source "$CONFIG_FILE"
+            logit "*** Reading config file now..."
+            logit
             while read line
             do
                 #[[ "$line" =~ ^#.*$ ]] && continue

@@ -9,7 +9,7 @@ This is simply a script version of quick-install document at https://jitsi.githu
 > jitsi-meet-turnserver, jicofo, jitsi-videobridge2
 
 Below are **optional**, will be installed only if opted for:
-> * jigasii (https://github.com/jitsi/jigasi)
+> * jigasi (https://github.com/jitsi/jigasi)
 > * jibri (https://github.com/jitsi/jibri)
 
 Also has option for configuring:
