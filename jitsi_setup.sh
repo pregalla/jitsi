@@ -1098,10 +1098,16 @@ check_chrome_chromedriver_compatibility()
     chrome_version=$(google-chrome --version|cut -d' ' -f3)
     chromedriver_version=$(chromedriver --version|cut -d' ' -f 2)
 
-    version_compare "$chrome_version" "$chromedriver_version" &&
-        logit "*** WARNING ***: ChromeDriver is newer than Chrome.
-            It may not support this version of Chrome. Better if both are of same version..." ||
-        logit "Chrome and ChromeDriver are compatible..."
+    if [ -n "$chrome_version" ] && [ -n "$chromedriver_version" ]
+    then
+        version_compare "$chrome_version" "$chromedriver_version" &&
+            logit "*** WARNING ***: ChromeDriver is newer than Chrome.
+                It may not support this version of Chrome. Better if both are of same version..." ||
+            logit "Chrome and ChromeDriver are compatible..."
+    else
+        logit "*** ERROR ***: Either Chrome or ChromeDriver(or both) is(are) not installed..."
+        logit "*** ERROR ***: Recording will not start..."
+    fi
 }
 
 #install compatible versions
@@ -1119,7 +1125,14 @@ install_chrome_and_chromedriver()
     sudo apt-get -y install google-chrome-stable
 
     sudo mkdir -p /etc/opt/chrome/policies/managed
-    echo '{ "CommandLineFlagSecurityWarningsEnabled": false }' | sudo tee -a /etc/opt/chrome/policies/managed/managed_policies.json
+    grep -qs '{ "CommandLineFlagSecurityWarningsEnabled": false }' /etc/opt/chrome/policies/managed/managed_policies.json
+    if [ $? != 0 ]
+    then
+        logit; logit "Chrome policies: Added \"CommandLineFlagSecurityWarningsEnabled\": false"
+        echo '{ "CommandLineFlagSecurityWarningsEnabled": false }' | sudo tee -a /etc/opt/chrome/policies/managed/managed_policies.json > /dev/null
+    else
+        logit; logit "Chrome policies: Already present - \"CommandLineFlagSecurityWarningsEnabled\": false"
+    fi
 
     logit; logit "Google Chrome Stable build Install COMPLETE..."; logit
     logit "Google Chrome version installed: $(google-chrome --version)"; logit
@@ -2079,7 +2092,6 @@ case "$chosen_setup_option" in
     ;;
 
 8)
-    configure_transcription
     logit
     logit "Quitting..."
     ;;
