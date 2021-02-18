@@ -15,7 +15,7 @@
 
 # Certificates
 # USE_SELF_SIGNED_CERTS=yes/no
-# USE_LETSENCRYPT_CERTS=yes/no
+# GENERATE_LETSENCRYPT_CERTS=yes/no
 # USE_EXISTING_CERTS=yes/no
 # 
 # LETSENCRYPT_EMAIL=DummyName@DummyCompany
@@ -37,7 +37,7 @@
 # 
 # For Transcription
 # ENABLE_TRANSCRIPTION=yes/no
-# TRANSCRIPTION_ENGINE=goole/vosk #case sensitive
+# TRANSCRIPTION_ENGINE=google/vosk #case sensitive
 # JIGASI_TRANSCRIPTS_DIR=/directory/to/store/transcripts
 # 
 # GOOGLE_APPLICATION_CREDENTIALS=/path/to/google/credentials/file

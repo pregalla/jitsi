@@ -503,7 +503,23 @@ configure_secure_domain()
 
 check_configure_secure_domain()
 {
-    logit
+    case "$ENABLE_SECURE_DOMAIN" in
+    "yes")
+        logit "Found ENABLE_SECURE_DOMAIN=yes in config file..."
+        logit "Proceeding to configure secure domain..."
+        configure_secure_domain
+        return
+        ;;
+    "no")
+        logit "Found ENABLE_SECURE_DOMAIN=no in config file..."
+        logit "SKIPPING secure domain..."
+        return
+        ;;
+    *)  logit "ENABLE_SECURE_DOMAIN not found in config...will prompt now..."; logit
+        ;;
+    esac
+
+logit
     logit "Secure Domain: Once configured, the host has to authenticate using username/password for joining a meeting..."
     logit "It is RECOMMENDED as a security measure..."
     logit
@@ -546,6 +562,24 @@ generate_letsencrypt_certs()
 
 check_generate_letsencrypt_certs()
 {
+
+    case "$GENERATE_LETSENCRYPT_CERTS" in
+    "yes")
+        logit; logit "Found GENERATE_LETSENCRYPT_CERTS=yes in config file..."
+        logit "Proceeding to generate Let's Encrypt certificates..."
+        generate_letsencrypt_certs
+        return
+        ;;
+    "no")
+        logit; logit "Found GENERATE_LETSENCRYPT_CERTS=no in config file..."
+        logit "SKIPPING Let's Encrypt certificates... self-signed certificates will be used..."
+        return
+        ;;
+    *)  logit
+        logit "GENERATE_LETSENCRYPT_CERTS not found in config...will prompt now..."; logit
+        ;;
+    esac
+
     logit
     logit "For encryption, Let's Encrypt certificates are RECOMMENDED than self-signed certificates..."
     logit
@@ -560,7 +594,8 @@ check_generate_letsencrypt_certs()
             generate_letsencrypt_certs
             break;;
         2|[nN]|[Nn][Oo]) logit
-            logit "OK. SKIPPING Let's Encrypt certificates... self-signed certificates will be used..."; break;;
+            logit "OK. SKIPPING Let's Encrypt certificates... self-signed certificates will be used instead..."
+            break;;
         *)  logit
             logit "Invalid option...Choose one from given options..."; ;;
     esac
@@ -648,8 +683,24 @@ enable_jigasi_authentication()
 
 check_enable_jigasi_authentication()
 {
+    case "$ENABLE_JIGASI_AUTHENTICATION" in
+    "yes")
+        logit "Found ENABLE_JIGASI_AUTHENTICATION=yes in config file..."
+        logit "Proceeding with Jigasi Authentication..."
+        enable_jigasi_authentication
+        return
+        ;;
+    "no")
+        logit "Found ENABLE_JIGASI_AUTHENTICATION=no in config file..."
+        logit "SKIPPING Jigasi Authentication..."
+        return
+        ;;
+    *)  logit "ENABLE_JIGASI_AUTHENTICATION not found in config...will prompt now...";
+        logit
+        ;;
+    esac
 
-    logit "Jigasi Authentication is RECOMMENDED, so that transcriber joins in hidden mode..."
+    logit "Jigasi Authentication is RECOMMENDED, so that transcriber (Speech-To-Text) joins in hidden mode..."
     logit
     logit "Do you want to configure authentication for jigasi?"
     
@@ -818,6 +869,23 @@ configure_transcription()
 
 check_configure_transcription()
 {
+    case "$ENABLE_TRANSCRIPTION" in
+    "yes")
+        logit "Found ENABLE_TRANSCRIPTION=yes in config file..."
+        logit "Proceeding to configure Transcription (Speech-To-Text)..."
+        configure_transcription
+        return
+        ;;
+    "no")
+        logit "Found ENABLE_TRANSCRIPTION=no in config file..."
+        logit "SKIPPING Transcription (Speech-To-Text)..."
+        return
+        ;;
+    *)
+        logit "ENABLE_TRANSCRIPTION not found in config...will prompt now..."; logit
+        ;;
+    esac
+
     logit
     logit "Do you want to configure Transcription (Speech-To-Text)?"
     
@@ -1270,6 +1338,22 @@ install_jibri()
 
 check_install_jibri()
 {
+    case "$INSTALL_JIBRI" in
+    "yes")
+        logit "Found INSTALL_JIBRI=yes in config file..."
+        logit "Proceeding to install Jibri.."
+        install_jibri
+        return
+        ;;
+    "no")
+        logit; logit "Found INSTALL_JIBRI=no in config file..."
+        logit "SKIPPING Jibri Installation..."
+        return
+        ;;
+    *)  logit "INSTALL_JIBRI not found in config...will prompt now..."; logit
+        ;;
+    esac
+
     logit
     logit "Do you want to install Jibri?"
     
@@ -1356,6 +1440,22 @@ install_jigasi()
 
 check_install_jigasi()
 {
+    case "$INSTALL_JIGASI" in
+    "yes")
+        logit "Found INSTALL_JIGASI=yes in config file..."
+        logit "Proceeding to install Jigasi.."
+        install_jigasi
+        return
+        ;;
+    "no")
+        logit "Found INSTALL_JIGASI=no in config file..."
+        logit "OK. SKIPPING Jigasi Installation..."
+        return
+        ;;
+    *)  logit "INSTALL_JIGASI not found in config...will prompt now..."; logit
+        ;;
+    esac
+
     logit
     logit "Do you want to install Jigasi?"
     
@@ -1432,66 +1532,28 @@ install_jitsi()
     
     install_jitsi_meet
 
-    if [ "$USE_LETSENCRYPT_CERTS" = "yes" ]
-    then
-        logit; logit "Found USE_LETSENCRYPT_CERTS=yes in config file..."
-        generate_letsencrypt_certs
-    else
-        check_generate_letsencrypt_certs
-    fi
+    #Generate Let's Encrypt Certificates?
+    check_generate_letsencrypt_certs
     
     configure_advanced_options
 
     #configure secure domain?
-    if [ "$ENABLE_SECURE_DOMAIN" = "yes" ]
-    then
-        logit "Found ENABLE_SECURE_DOMAIN=yes in config file..."
-        configure_secure_domain
-    else
-        check_configure_secure_domain
-    fi
+    check_configure_secure_domain
     
     #Install Jigasi?
-    if [ "$INSTALL_JIGASI" = "yes" ]
-    then
-        logit "Found INSTALL_JIGASI=yes in config file..."
-        install_jigasi
-    else
-        check_install_jigasi
-    fi
+    check_install_jigasi
 
-    #Enable Jigasi Authentication?
     if is_jigasi_installed
     then
-        if [ "$ENABLE_JIGASI_AUTHENTICATION" = "yes" ]
-        then
-            logit "Found ENABLE_JIGASI_AUTHENTICATION=yes in config file..."
-            enable_jigasi_authentication
-        else
-            check_enable_jigasi_authentication
-        fi
-    fi
+        #Enable Jigasi Authentication?
+        check_enable_jigasi_authentication
 
-    #Configure Transcription (Speech-To-Text)?
-    if is_jigasi_installed
-    then
-        if [ "$ENABLE_TRANSCRIPTION" = "yes" ]
-        then
-            configure_transcription
-        else
-            logit "Found ENABLE_TRANSCRIPTION=yes in config file..."
-            check_configure_transcription
-        fi
+        #Configure Transcription (Speech-To-Text)?
+        check_configure_transcription
     fi
 
     #Install Jibri?
-    if [ "$INSTALL_JIBRI" = "yes" ]
-    then
-        logit "Found INSTALL_JIBRI=yes in config file..."
-        install_jibri
-    else
-        check_install_jibri
-    fi
+    check_install_jibri
     
     logit
     logit "**********************************"
@@ -1562,7 +1624,7 @@ uninstall_jitsi()
     logit "**********************************"
     logit
     
-    logit "Showing status of installed services after uninstall, for verification..."
+    logit "Showing installed services after uninstall, for verification(should not see any services)..."
     show_installed_versions
 }
 
@@ -1791,7 +1853,7 @@ check_prerequisites()
 usage()
 {
     logit "Usage:"
-    
+    logit
     logit "./$SCRIPT_NAME (*** Run without any arguments ***)"
     logit
     logit "Supports: [check_prerequisites|show_installed_versions|install|uninstall|help|export_config_file_template|show_status_of_services|Quit]"
@@ -1876,7 +1938,7 @@ export_config_file_template()
 
 # Certificates
 # USE_SELF_SIGNED_CERTS=yes/no
-# USE_LETSENCRYPT_CERTS=yes/no
+# GENERATE_LETSENCRYPT_CERTS=yes/no
 # USE_EXISTING_CERTS=yes/no
 # 
 # LETSENCRYPT_EMAIL=DummyName@DummyCompany
@@ -1898,7 +1960,7 @@ export_config_file_template()
 # 
 # For Transcription
 # ENABLE_TRANSCRIPTION=yes/no
-# TRANSCRIPTION_ENGINE=goole/vosk #case sensitive
+# TRANSCRIPTION_ENGINE=google/vosk #case sensitive
 # JIGASI_TRANSCRIPTS_DIR=/directory/to/store/transcripts
 # 
 # GOOGLE_APPLICATION_CREDENTIALS=/path/to/google/credentials/file
@@ -2047,10 +2109,10 @@ logit "What do you want to do?"
 
 # Display Menu
 logit "
-    1) check_prerequisites          2) show_installed_versions
-    3) Install                      4) Uninstall
-    5) help                         6) export_config_file_template
-    7) show_status_of_services      8) Quit
+    1) check_prerequisites          5) Uninstall
+    2) show_installed_versions      6) help
+    3) show_status_of_services      7) export_config_file_template
+    4) Install                      8) Quit
 "
 
 echo -n "$PS3"
@@ -2076,6 +2138,10 @@ case "$chosen_setup_option" in
 
 3)
     logit
+    show_service_status
+    ;;
+4)
+    logit
     logit "$SCRIPT_NAME Install called..."
 
     show_installed_versions
@@ -2086,26 +2152,21 @@ case "$chosen_setup_option" in
     install_aliases
     ;;
 
-4)
+5)
     logit
     logit "$SCRIPT_NAME Uninstall called..."
     show_installed_versions
     uninstall_jitsi
     ;;
 
-5)
+6)
     logit
     usage |less
     ;;
 
-6)
-    logit
-    export_config_file_template
-    ;;
-
 7)
     logit
-    show_service_status
+    export_config_file_template
     ;;
 
 8)
