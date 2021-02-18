@@ -1571,28 +1571,9 @@ install_jitsi()
     show_service_status
 }
 
-# TODO: Handle UNINSTALL_FROM_CONFIG in config file
 uninstall_jitsi()
 {
-    logit
-    logit "This will uninstall all jitsi components, nginx, jitsi-meet, jicofo, jitsi-videobridge, Jigasi, jibri"
-    logit "*** NOTE ***: This will also remove all directories listed below:"
-    logit
-    logit -n $'\t\t'
-    logit  "$TO_REMOVE_DIRS"
-    logit
-    logit "Quit here if you want to make copies of any of those directories..."
-    logit
-    logit "Do you REALLY want to uninstall?"
-    select yn in "Yes" "No" "Quit"; do
-    logit "You chose: \"$REPLY\""
-    case $REPLY in
-        1|[yY]|[Yy][Ee][Ss]) logit; logit "OK. Uninstalling..."; break;;
-        2|[nN]|[Nn][Oo]) show_end_time; exit;;
-        3|[qQ]|[Qq][Uu][Ii][Tt]) logit; logit "Quitting..."; return;;
-        *) logit "Invalid option...Choose one from given options..."; ;;
-    esac
-    done
+    logit "Starting to uninstall..."
 
     stop_services
     logit
@@ -1628,6 +1609,36 @@ uninstall_jitsi()
     show_installed_versions
 }
 
+check_uninstall()
+{
+    if [ "$UNINSTALL_WITHOUT_PROMPT" = "yes" ]
+    then
+        logit "Found UNINSTALL_WITHOUT_PROMPT=yes in config file..."
+        logit "Proceeding to Uninstall, without prompting yes/no..."
+        uninstall_jitsi
+        return;
+    fi
+
+    logit
+    logit "This will uninstall all jitsi components, nginx, jitsi-meet, jicofo, jitsi-videobridge, Jigasi, jibri"
+    logit "*** NOTE ***: This will also remove all directories listed below:"
+    logit
+    logit -n $'\t\t'
+    logit  "$TO_REMOVE_DIRS"
+    logit
+    logit "Quit here if you want to make copies of any of those directories..."
+    logit
+    logit "Do you REALLY want to uninstall?"
+    select yn in "Yes" "No" "Quit"; do
+    logit "You chose: \"$REPLY\""
+    case $REPLY in
+        1|[yY]|[Yy][Ee][Ss]) logit; logit "OK. Uninstalling..."; break;;
+        2|[nN]|[Nn][Oo]) logit; logit "OK...Not going to uninstall..."; return;;
+        3|[qQ]|[Qq][Uu][Ii][Tt]) logit; logit "Quitting Uninstall..."; return;;
+        *) logit "Invalid option...Choose one from given options..."; ;;
+    esac
+    done
+}
 
 # TODO: Might add a check to verify the SIP user_id format(user@host) for jigasi
 check_configuration()
@@ -1852,6 +1863,8 @@ check_prerequisites()
 
 usage()
 {
+    logit "*** Run it either as root user or a user with sudo privileges ***"
+    logit
     logit "Usage:"
     logit
     logit "./$SCRIPT_NAME (*** Run without any arguments ***)"
@@ -1960,9 +1973,9 @@ export_config_file_template()
 # 
 # For Transcription
 # ENABLE_TRANSCRIPTION=yes/no
-# TRANSCRIPTION_ENGINE=google/vosk #case sensitive
 # JIGASI_TRANSCRIPTS_DIR=/directory/to/store/transcripts
 # 
+# TRANSCRIPTION_ENGINE=google/vosk #case sensitive
 # GOOGLE_APPLICATION_CREDENTIALS=/path/to/google/credentials/file
 # 
 # For Jibri
@@ -1970,8 +1983,7 @@ export_config_file_template()
 # JIBRI_RECORDINGS_DIR=/directory/to/store/recordings
 # 
 # Miscellaneous
-# TODO: Remove me after handling in code
-# UNINSTALL_FROM_CONFIG=yes/no
+# UNINSTALL_WITHOUT_PROMPT=yes/no
 EOF
 "
         logit "Exporting config file template to $CONFIG_FILE: COMPLETE..."
@@ -2156,7 +2168,7 @@ case "$chosen_setup_option" in
     logit
     logit "$SCRIPT_NAME Uninstall called..."
     show_installed_versions
-    uninstall_jitsi
+    check_uninstall
     ;;
 
 6)

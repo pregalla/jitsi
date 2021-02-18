@@ -25,6 +25,8 @@ Also has option for configuring:
 
 ## Usage
 
+**Run it either as root user or a user with sudo privileges**
+
 bash jitsi_setup.sh (**Run without any arguments**) 
 
 ### Options

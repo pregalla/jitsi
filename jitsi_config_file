@@ -37,9 +37,9 @@
 # 
 # For Transcription
 # ENABLE_TRANSCRIPTION=yes/no
-# TRANSCRIPTION_ENGINE=google/vosk #case sensitive
 # JIGASI_TRANSCRIPTS_DIR=/directory/to/store/transcripts
 # 
+# TRANSCRIPTION_ENGINE=google/vosk #case sensitive
 # GOOGLE_APPLICATION_CREDENTIALS=/path/to/google/credentials/file
 # 
 # For Jibri
@@ -48,4 +48,4 @@
 # 
 # Miscellaneous
 # TODO: Remove me after handling in code
-# UNINSTALL_FROM_CONFIG=yes/no
+# UNINSTALL_WITHOUT_PROMPT=yes/no
