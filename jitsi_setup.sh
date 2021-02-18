@@ -7,6 +7,7 @@ PRODUCT_NAME=jitsi
 SCRIPT_NAME="${PRODUCT_NAME}_setup.sh"
 SCRIPT_VERSION=1.0
 
+CURRENT_USER=$(whoami)
 CURRENT_WORKING_DIR=$(pwd)
 CONFIG_FILE="$CURRENT_WORKING_DIR/${PRODUCT_NAME}_config_file"
 
@@ -777,12 +778,14 @@ choose_transcription_engine()
                 logit
                 logit "OK. Proceeding to configure Google's Transcription (Speech-To-Text) Engine...";
                 use_google_transcription
+                return
                 ;;
 
             "vosk")
                 logit
                 logit "OK. Proceeding to configure Vosk's Transcription (Speech-To-Text) Engine...";
                 use_vosk_transcription
+                return
                 ;;
             *)
                 logit
@@ -790,7 +793,6 @@ choose_transcription_engine()
                 logit
                 ;;
         esac
-        return
     fi
 
     select engine in "Google" "Vosk"; do
@@ -1632,7 +1634,9 @@ check_uninstall()
     select yn in "Yes" "No" "Quit"; do
     logit "You chose: \"$REPLY\""
     case $REPLY in
-        1|[yY]|[Yy][Ee][Ss]) logit; logit "OK. Uninstalling..."; break;;
+        1|[yY]|[Yy][Ee][Ss]) logit; logit "OK. Uninstalling..."; 
+                             uninstall_jitsi
+                             break;;
         2|[nN]|[Nn][Oo]) logit; logit "OK...Not going to uninstall..."; return;;
         3|[qQ]|[Qq][Uu][Ii][Tt]) logit; logit "Quitting Uninstall..."; return;;
         *) logit "Invalid option...Choose one from given options..."; ;;
@@ -1986,6 +1990,7 @@ export_config_file_template()
 # UNINSTALL_WITHOUT_PROMPT=yes/no
 EOF
 "
+        sudo chown "$CURRENT_USER":"$CURRENT_USER" "$CONFIG_FILE"
         logit "Exporting config file template to $CONFIG_FILE: COMPLETE..."
         logit
     else

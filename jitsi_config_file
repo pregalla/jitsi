@@ -47,5 +47,4 @@
 # JIBRI_RECORDINGS_DIR=/directory/to/store/recordings
 # 
 # Miscellaneous
-# TODO: Remove me after handling in code
 # UNINSTALL_WITHOUT_PROMPT=yes/no
