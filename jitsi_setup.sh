@@ -334,6 +334,9 @@ configure_firewall()
     sudo ufw allow 3478/udp
     sudo ufw allow 5349/tcp
     sudo ufw allow 5222/tcp
+
+    #start the firewall
+    echo y|sudo ufw enable
 }
 
 modify_systemd_limits()
@@ -1963,7 +1966,7 @@ export_config_file_template()
 # For Jitsi Meet Server
 # ENABLE_SECURE_DOMAIN=yes/no
 # 
-# Ensure both users and passwords are of same length
+# Ensure that the number of users and the number of passwords are same
 # SECURE_USERS=\"user1 user2 user3 ...\"
 # SECURE_PASSWORDS=\"password1 password2 password3 ...\"
 
