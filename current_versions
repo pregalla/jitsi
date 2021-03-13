@@ -1,0 +1,14 @@
+Sat 13 Mar 2021 05:37:14 PM UTC: Currently Installed Versions:
+************************************************************
+ii  nginx-full                        1.14.2-2+deb10u3             amd64        nginx web/proxy server (standard version)
+ii  jitsi-meet                        2.0.5390-3                   all          WebRTC JavaScript video conferences
+ii  jitsi-meet-prosody                1.0.4628-1                   all          Prosody configuration for Jitsi Meet
+ii  jitsi-meet-turnserver             1.0.4628-1                   all          Configures coturn to be used with Jitsi Meet
+ii  jitsi-meet-web                    1.0.4628-1                   all          WebRTC JavaScript video conferences
+ii  jitsi-meet-web-config             1.0.4628-1                   all          Configuration for web serving of Jitsi Meet
+ii  jitsi-videobridge2                2.1-416-g2f43d1b4-1          all          WebRTC compatible Selective Forwarding Unit (SFU)
+ii  jitsi-meet-prosody                1.0.4628-1                   all          Prosody configuration for Jitsi Meet
+ii  prosody                           0.11.8-1~buster1             amd64        Lightweight Jabber/XMPP server
+ii  jigasi                            1.1-166-g929a439-1           amd64        Jitsi Gateway for SIP
+ii  jibri                             8.0-61-g99288dc-1            all          Jibri
+************************************************************
