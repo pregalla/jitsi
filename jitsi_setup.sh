@@ -611,6 +611,8 @@ install_jitsi_meet()
     logit 
     logit "Installing jitsi-meet..."
     
+    sudo apt install wget curl -y
+
     install_latest_prosody 
     configure_firewall
 
