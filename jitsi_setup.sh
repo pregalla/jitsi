@@ -1513,6 +1513,225 @@ is_jibri_installed()
     fi
 }
 
+configure_etherpad_jitsi()
+{
+    logit
+    logit "Making configuration changes in Jitsi for Etherpad..."
+
+    ETHERPAD_BASE="https://$SERVER_FQDN/etherpad/p/"
+
+    JITSI_MEET_CONFIG="/etc/jitsi/meet/"$SERVER_FQDN"-config.js"
+    NGINX_CONF="/etc/nginx/sites-available/"$SERVER_FQDN".conf"
+
+    sudo sed -i "/List of undocumented settings used in lib-jitsi-meet/i     etherpad_base: \'$ETHERPAD_BASE\',\n" $JITSI_MEET_CONFIG
+
+    ETHERPAD_NGINX_BLOCK="    \# Etherpad-lite\n    location ^~ /etherpad/ {\n        proxy_pass http://localhost:9001/;\n        proxy_set_header X-Forwarded-For \$remote_addr;\n        proxy_buffering off;\n        proxy_set_header Host \$host;\n    }\n\n    \# websockets for subdomains"
+        #sed -i "s|.*websockets for subdomains|    \# Etherpad-lite\n    location ^~ /etherpad/ {\n        proxy_pass http://localhost:9001/;\n        proxy_set_header X-Forwarded-For \$remote_addr;\n        proxy_buffering off;\n        proxy_set_header Host \$host;\n    }\n\n    \# websockets for subdomains|" $NGINX_CONF
+
+    sudo sed -i "s|.*websockets for subdomains|$ETHERPAD_NGINX_BLOCK|" $NGINX_CONF
+
+    logit "Making configuration changes in Jitsi for Etherpad: COMPLETE..."
+    logit
+}
+
+configure_etherpad_service()
+{
+    logit
+    logit "Configuring Etherpad as a service..."
+
+    sudo adduser --system --home=$ETHERPAD_INSTALL_DIR/etherpad-lite/ --group etherpad
+    sudo chown -R etherpad: $ETHERPAD_INSTALL_DIR
+
+    ETHERPAD_SERVICE_FILE="/etc/init.d/etherpad-lite"
+
+    sudo sh -c "cat > $ETHERPAD_SERVICE_FILE << 'EOF'
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          etherpad-lite
+# Required-Start:    \$local_fs \$remote_fs \$network \$syslog
+# Required-Stop:     \$local_fs \$remote_fs \$network \$syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts etherpad lite
+# Description:       starts etherpad lite using start-stop-daemon
+### END INIT INFO
+
+PATH=\"/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/node/bin\"
+LOGFILE=\"/home/ubuntu/etherpad/etherpad-lite.log\"
+EPLITE_DIR=\"/home/ubuntu/etherpad/etherpad-lite\"
+EPLITE_BIN=\"bin/safeRun.sh\"
+USER=\"etherpad\"
+GROUP=\"etherpad\"
+DESC=\"Etherpad Lite\"
+NAME=\"etherpad-lite\"
+
+set -e
+
+. /lib/lsb/init-functions
+
+start() {
+  echo \"Starting \$DESC... \"
+
+    start-stop-daemon --start --chuid \"\$USER:\$GROUP\" --background --make-pidfile --pidfile /var/run/\$NAME.pid --exec \$EPLITE_DIR/\$EPLITE_BIN -- \$LOGFILE || true
+  echo \"done\"
+}
+
+#We need this function to ensure the whole process tree will be killed
+killtree() {
+    local _pid=\$1
+    local _sig=\${2-TERM}
+    for _child in \$(ps -o pid --no-headers --ppid \${_pid}); do
+        killtree \${_child} \${_sig}
+    done
+    kill -\${_sig} \${_pid}
+}
+
+stop() {
+  echo \"Stopping \$DESC... \"
+   while test -d /proc/\$(cat /var/run/\$NAME.pid); do
+    killtree \$(cat /var/run/\$NAME.pid) 15
+    sleep 0.5
+  done
+  rm /var/run/\$NAME.pid
+  echo \"done\"
+}
+
+status() {
+  status_of_proc -p /var/run/\$NAME.pid \"\" \"etherpad-lite\" && exit 0 || exit \$?
+}
+
+case \"\$1\" in
+  start)
+      start
+      ;;
+  stop)
+      stop
+      ;;
+  restart)
+      stop
+      start
+      ;;
+  status)
+      status
+      ;;
+  *)
+      echo \"Usage: \$NAME {start|stop|restart|status}\" >&2
+      exit 1
+      ;;
+esac
+
+exit 0
+EOF
+"
+
+    sudo chmod +x /etc/init.d/etherpad-lite
+    sudo update-rc.d etherpad-lite defaults
+
+    logit
+    logit "Configuring Etherpad as a service: COMPLETE..."
+    logit
+}
+
+install_etherpad_extra_features()
+{
+    logit
+    logit "Installing Extra features of Etherpad..."
+    logit
+
+    cd $ETHERPAD_INSTALL_DIR/etherpad-lite
+
+    npm install --no-save --legacy-peer-deps ep_headings2 ep_markdown ep_comments_page ep_align ep_font_color ep_webrtc ep_embedded_hyperlinks2
+
+    DISABLE_AUDIO_VIDEO="\  \"ep_webrtc\" : {\n      \"enabled\": false,\n      \"audio\" : {\n          \"disabled\": \"soft\"\n      },\n      \"video\" : {\n          \"disabled\": \"soft\"\n      }\n  },\n"
+
+    sudo -i sed "/\"port\": 9001,/a $DISABLE_AUDIO_VIDEO" settings.json
+
+    logit
+    logit "Installing Extra features of Etherpad: COMPLETE..."
+    logit
+}
+
+install_etherpad()
+{
+    logit
+    logit "Installing Etherpad..."
+    logit
+
+    MIN_NODEJS_VERSION="10.17.0"
+
+    sudo apt install npm -y
+    sudo apt install nodejs -y
+
+    NODEJS_VERSION=$(nodejs --version)
+    logit "Version of nodejs: $NODEJS_VERSION"
+    if version_compare ${NODEJS_VERSION:1} $MIN_NODEJS_VERSION
+    then
+        logit "*** WARNING ***: Nodejs: $NODEJS_VERSION. Minimum version recommended $MIN_NODEJS_VERSION..."
+        logit "Not going to install Etherpad..."
+        return
+    fi
+
+    mkdir -p $ETHERPAD_INSTALL_DIR
+    cd $ETHERPAD_INSTALL_DIR
+    git clone --branch master https://github.com/ether/etherpad-lite.git
+
+    install_etherpad_extra_features
+
+    configure_etherpad_service
+
+    configure_etherpad_jitsi
+
+    logit "Starting Etherpad service..."
+    sudo systemctl start etherpad-lite
+    logit "Starting Etherpad service: COMPLETE..."
+    logit
+
+    logit "Installing Etherpad: COMPLETE..."
+    logit
+}
+
+check_install_etherpad()
+{
+    case "$INSTALL_ETHERPAD" in
+    "yes")
+        logit "Found INSTALL_ETHERPAD=yes in config file..."
+        logit "Proceeding to install Etherpad..."
+        install_etherpad
+        return
+        ;;
+    "no")
+        logit "Found INSTALL_ETHERPAD=no in config file..."
+        logit "OK. SKIPPING ETHERPAD Installation..."
+        return
+        ;;
+    *)  logit "INSTALL_ETHERPAD not found in config...will prompt now..."; logit
+        ;;
+    esac
+
+    logit
+    logit "Do you want to install Etherpad (https://github.com/ether/etherpad-lite)?"
+
+    select yn in "Yes" "No"; do
+    logit "You chose: \"$REPLY\""
+    case $REPLY in
+        1|[yY]|[Yy][Ee][Ss]) logit
+            logit "OK. Proceeding to install Etherpad...";
+            install_etherpad
+            break
+            ;;
+        2|[nN]|[Nn][Oo]) logit
+            logit "OK. SKIPPING Etherpad Installation...";
+            break
+            ;;
+        *) logit
+            logit "Invalid option...Choose one from given options..."
+            ;;
+    esac
+    done
+
+}
+
 install_jitsi()
 {
     #check for previously installed versions
@@ -1547,6 +1766,9 @@ install_jitsi()
     #configure secure domain?
     check_configure_secure_domain
     
+    #Install Etherpad and integrate with jitsi?
+    check_install_etherpad
+
     #Install Jigasi?
     check_install_jigasi
 
@@ -1972,6 +2194,8 @@ export_config_file_template()
 # SECURE_USERS=\"user1 user2 user3 ...\"
 # SECURE_PASSWORDS=\"password1 password2 password3 ...\"
 
+# INSTALL_ETHERPAD=yes/no
+
 # For Jigasi
 # INSTALL_JIGASI=yes/no
 # ENABLE_JIGASI_AUTHENTICATION=yes/no
@@ -2101,6 +2325,8 @@ ACTUAL_GOOGLE_CREDS_PATH="/etc/jitsi/jigasi/google_credentials.json"
 
 DEFAULT_JIGASI_TRANSCRIPTS_DIR=/etc/"$PRODUCT_NAME"/transcripts
 DEFAULT_JIBRI_RECORDINGS_DIR=/etc/"$PRODUCT_NAME"/recordings
+
+ETHERPAD_INSTALL_DIR="$HOME/etherpad"
 
 # To track installed components
 JITSI_MEET_INSTALLED=0
