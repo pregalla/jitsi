@@ -16,6 +16,7 @@ Also has option for configuring:
 > * secure domain (https://jitsi.github.io/handbook/docs/devops-guide/secure-domain)
 > * jigasi authentication (find it towards the end of __secure domain__ link)
 > * transcription(Google/Vosk) (https://github.com/jitsi/jigasi#configuring-sip-and-transcription)
+> * Etherpad (https://github.com/ether/etherpad-lite)
 
 #### **Supported Platforms**
 
